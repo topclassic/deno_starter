@@ -1,13 +1,29 @@
 version: "3.3"
 
 services:
-  deno:
-    image: "deno-docker:0.0.1"
-    build: .
-    ports:
-      - "8000:8000"
-    networks: 
+  nginx:
+    image: nginx
+    depends_on:
       - deno
+      - next
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    container_name: nginx
+    ports:
+      - "80:80"
+    expose:
+      - 80
 
-networks:
-  deno: {}
+  next:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    expose: 
+      - 3000
+
+  deno:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    expose: 
+      - 8000
